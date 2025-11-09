@@ -13,7 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<div th:replace="fragments/navbar :: mainNav('menu')"></div>
+<div th:replace="~{fragments/navbar :: mainNav('menu')}"></div>
 
 <main class="container py-5 mt-5">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -51,7 +51,7 @@
                         <td th:text="${iter.index + 1}">1</td>
                         <td th:text="${plato.nombre}">Nombre</td>
                         <td th:text="${plato.descripcion ?: '—'}">Descripción</td>
-                        <td th:text="${#numbers.formatDecimal(plato.precio, 1, 'POINT', 2, 'ZERO_PAD')}">0.00</td>
+                        <td th:text="${#numbers.formatDecimal(plato.precio, 2, 2)}">0.00</td>
                         <td>
                             <span class="badge text-bg-light me-1"
                                   th:each="insumo : ${plato.insumos}"
