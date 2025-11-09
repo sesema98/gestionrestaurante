@@ -6,7 +6,6 @@ import com.serva.gestionrestaurante.services.ClienteService;
 import com.serva.gestionrestaurante.services.MesaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/clientes")
+@PreAuthorize("hasRole('ADMIN')")
 public class ClienteController {
 
-    @Autowired
-    private MesaService mesaService;
-
+    private final MesaService mesaService;
     private final ClienteService clienteService;
 
     @GetMapping
@@ -29,61 +27,80 @@ public class ClienteController {
         return "clientes/listar";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/nuevo")
     public String nuevo(@RequestParam(required = false) Long mesaId, Model model) {
         Cliente cliente = new Cliente();
         if (mesaId != null) {
             mesaService.buscar(mesaId).ifPresent(cliente::setMesa);
         }
-
-        model.addAttribute("titulo", "Registrar Cliente");
-        model.addAttribute("cliente", cliente);
-        model.addAttribute("mesas", mesaService.listar());
+        prepararFormulario(model, cliente, "Registrar Cliente");
         return "clientes/form";
     }
 
-
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Cliente cliente, @RequestParam("mesaId") Long mesaId) {
-        // Buscar la mesa seleccionada
-        Mesa mesa = mesaService.buscar(mesaId).orElse(null);
+    public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente,
+                          BindingResult result,
+                          @RequestParam("mesaId") Long mesaId,
+                          Model model) {
 
-        if (mesa != null) {
-            mesa.setEstado("Ocupada");
-            mesaService.guardar(mesa);
-            cliente.setMesa(mesa);
+        if (mesaId == null) {
+            result.rejectValue("mesa", "mesa.requerida", "Selecciona una mesa");
+        }
+
+        Mesa mesaSeleccionada = mesaId != null ? mesaService.buscar(mesaId).orElse(null) : null;
+        if (mesaId != null && mesaSeleccionada == null) {
+            result.rejectValue("mesa", "mesa.noExiste", "Selecciona una mesa valida");
+        }
+        Cliente clientePersistido = cliente.getId() != null
+                ? clienteService.buscar(cliente.getId()).orElse(null)
+                : null;
+        Mesa mesaAnterior = clientePersistido != null ? clientePersistido.getMesa() : null;
+        if (clientePersistido != null) {
+            cliente.setActivo(clientePersistido.isActivo());
+        }
+
+        boolean cambiandoMesa = mesaSeleccionada != null && (mesaAnterior == null ||
+                !mesaAnterior.getId().equals(mesaSeleccionada.getId()));
+
+        if (mesaSeleccionada != null) {
+            cliente.setMesa(mesaSeleccionada);
+        }
+
+        if (cambiandoMesa && mesaSeleccionada != null &&
+                !"Disponible".equalsIgnoreCase(mesaSeleccionada.getEstado())) {
+            result.rejectValue("mesa", "mesa.noDisponible", "La mesa no est\u00e1 disponible.");
+        }
+
+        if (result.hasErrors()) {
+            prepararFormulario(model, cliente, cliente.getId() == null ? "Registrar Cliente" : "Editar Cliente");
+            return "clientes/form";
+        }
+
+        if (mesaAnterior != null && cambiandoMesa) {
+            mesaAnterior.setEstado("Disponible");
+            mesaService.guardar(mesaAnterior);
+        }
+
+        if (mesaSeleccionada != null) {
+            mesaSeleccionada.setEstado("Ocupada");
+            mesaService.guardar(mesaSeleccionada);
+            cliente.setMesa(mesaSeleccionada);
         }
 
         clienteService.guardar(cliente);
         return "redirect:/clientes";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
         var clienteOpt = clienteService.buscar(id);
         if (clienteOpt.isEmpty()) {
             return "redirect:/clientes";
         }
-
-        var cliente = clienteOpt.get();
-
-        // Mostrar mesas disponibles + la mesa actual del cliente
-        var mesasDisponibles = mesaService.listar().stream()
-                .filter(m -> m.getEstado().equalsIgnoreCase("Disponible") ||
-                        (cliente.getMesa() != null && m.getId().equals(cliente.getMesa().getId())))
-                .toList();
-
-        model.addAttribute("titulo", "Editar Cliente");
-        model.addAttribute("cliente", cliente);
-        model.addAttribute("mesas", mesasDisponibles);
-
+        prepararFormulario(model, clienteOpt.get(), "Editar Cliente");
         return "clientes/form";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         clienteService.buscar(id).ifPresent(c -> {
@@ -95,5 +112,22 @@ public class ClienteController {
             clienteService.eliminar(id);
         });
         return "redirect:/clientes";
+    }
+
+    private void prepararFormulario(Model model, Cliente cliente, String titulo) {
+        Long mesaActual = cliente.getMesa() != null ? cliente.getMesa().getId() : null;
+        var todasLasMesas = mesaService.listar();
+        var mesasDisponibles = todasLasMesas.stream()
+                .filter(m -> "Disponible".equalsIgnoreCase(m.getEstado()) ||
+                        (mesaActual != null && mesaActual.equals(m.getId())))
+                .toList();
+        var mesasActivas = todasLasMesas.stream()
+                .filter(m -> !"Disponible".equalsIgnoreCase(m.getEstado()))
+                .toList();
+        model.addAttribute("titulo", titulo);
+        model.addAttribute("cliente", cliente);
+        model.addAttribute("mesasDisponibles", mesasDisponibles);
+        model.addAttribute("mesasActivas", mesasActivas);
+        model.addAttribute("mesaActualId", mesaActual);
     }
 }

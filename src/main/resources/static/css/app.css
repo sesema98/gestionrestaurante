@@ -1,0 +1,233 @@
+:root {
+    --emerald: #28a745;
+    --emerald-dark: #1f8a3e;
+    --sky: #007bff;
+    --soft-gray: #f8f9fa;
+    --muted-gray: #9ba3af;
+    --card-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+body {
+    font-family: "Poppins", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: var(--soft-gray);
+    color: #1f2933;
+    min-height: 100vh;
+}
+
+.navbar-modern {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.navbar-modern .nav-link {
+    font-weight: 500;
+    color: #4c5563;
+    transition: color .2s ease;
+}
+
+.navbar-modern .nav-link:hover,
+.navbar-modern .nav-link.active {
+    color: var(--emerald);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: #111827 !important;
+}
+
+.btn-emerald {
+    background: linear-gradient(120deg, var(--emerald), #45c86b);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+}
+
+.btn-emerald:hover {
+    background: linear-gradient(120deg, #1f8a3e, #33b856);
+    color: #fff;
+}
+
+.stat-card {
+    border-radius: 18px;
+    padding: 1.1rem 1.4rem;
+    background-color: #fff;
+    box-shadow: var(--card-shadow);
+}
+
+.stat-card .label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted-gray);
+}
+
+.stat-card .value {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.mesa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.mesa-card {
+    border: none;
+    border-radius: 18px;
+    padding: 1.5rem 1.25rem;
+    min-height: 150px;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.mesa-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
+}
+
+.mesa-card .mesa-number {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.mesa-card .state-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: .35rem .85rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.status-disponible {
+    background: #e8f9ef;
+    border: 1px solid #bef5d1;
+}
+
+.status-disponible .state-badge {
+    background: rgba(40, 167, 69, .12);
+    color: var(--emerald-dark);
+}
+
+.status-ocupada {
+    background: #ffe8ea;
+    border: 1px solid #ffc6cc;
+}
+
+.status-ocupada .state-badge {
+    background: rgba(220, 53, 69, .15);
+    color: #b02a37;
+}
+
+.status-reservada {
+    background: #fff3cd;
+    border: 1px solid #ffe08a;
+}
+
+.status-reservada .state-badge {
+    background: rgba(255, 193, 7, .2);
+    color: #a17400;
+}
+
+.table-modern thead {
+    background: #f1f5f9;
+    text-transform: uppercase;
+    font-size: .78rem;
+    letter-spacing: .05em;
+}
+
+.table-modern tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.badge-estado {
+    border-radius: 999px;
+    padding: .35rem .8rem;
+    font-size: .75rem;
+}
+
+.badge-estado.disponible {
+    background: rgba(40, 167, 69, .15);
+    color: var(--emerald-dark);
+}
+
+.badge-estado.ocupada {
+    background: rgba(220, 53, 69, .15);
+    color: #b02a37;
+}
+
+.badge-estado.reservada {
+    background: rgba(255, 193, 7, .2);
+    color: #8f6a00;
+}
+
+.badge-estado.sin-mesa {
+    background: rgba(15, 23, 42, .08);
+    color: #475569;
+}
+
+.card-glass {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.modal-hero {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fdfdfd;
+}
+
+.form-floating label {
+    color: #6b7280;
+}
+
+#clientesTableWrapper {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.filter-input {
+    border-radius: 999px;
+    padding-left: 2.5rem;
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.filter-input:focus {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, .15);
+    border-color: #80bdff;
+}
+
+body[data-admin="true"] .cliente-row {
+    cursor: pointer;
+    transition: background-color .25s ease;
+}
+
+body[data-admin="true"] .cliente-row:hover {
+    background-color: rgba(15, 23, 42, 0.04);
+}
+
+.alert-floating {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    z-index: 1080;
+    min-width: 280px;
+    box-shadow: var(--card-shadow);
+}
+
+@media (max-width: 992px) {
+    .mesa-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    #clientesTableWrapper {
+        max-height: none;
+    }
+}
