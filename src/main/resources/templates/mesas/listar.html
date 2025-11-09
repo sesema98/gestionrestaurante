@@ -13,6 +13,14 @@
         <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" th:href="@{/clientes}">Clientes</a></li>
             <li class="nav-item"><a class="nav-link active" th:href="@{/mesas}">Mesas</a></li>
+            <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="btn btn-outline-light btn-sm ms-2" th:href="@{/login}">Iniciar sesión</a>
+            </li>
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button class="btn btn-outline-light btn-sm" type="submit">Cerrar sesión</button>
+                </form>
+            </li>
         </ul>
     </div>
 </nav>

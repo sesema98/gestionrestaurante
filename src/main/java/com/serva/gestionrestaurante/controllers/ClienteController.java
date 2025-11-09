@@ -31,14 +31,18 @@ public class ClienteController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/nuevo")
-    public String nuevo(Model model) {
+    public String nuevo(@RequestParam(required = false) Long mesaId, Model model) {
+        Cliente cliente = new Cliente();
+        if (mesaId != null) {
+            mesaService.buscar(mesaId).ifPresent(cliente::setMesa);
+        }
+
         model.addAttribute("titulo", "Registrar Cliente");
-        model.addAttribute("cliente", new Cliente());
-        model.addAttribute("mesas", mesaService.listar().stream()
-                .filter(m -> m.getEstado().equalsIgnoreCase("Disponible"))
-                .toList());
+        model.addAttribute("cliente", cliente);
+        model.addAttribute("mesas", mesaService.listar());
         return "clientes/form";
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/guardar")

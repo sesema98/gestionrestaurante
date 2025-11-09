@@ -44,12 +44,12 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService(BCryptPasswordEncoder encoder) {
-        UserDetails user = User.withUsername("user")
+        UserDetails user = User.withUsername("cliente")
                 .password(encoder.encode("12345"))
                 .roles("USER")
                 .build();
 
-        UserDetails admin = User.withUsername("admin")
+        UserDetails admin = User.withUsername("mozo")
                 .password(encoder.encode("12345"))
                 .roles("ADMIN")
                 .build();

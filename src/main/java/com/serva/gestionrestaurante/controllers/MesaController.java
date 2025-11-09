@@ -15,11 +15,18 @@ import java.util.Optional;
 @RequestMapping("/mesas")
 public class MesaController {
 
-    private final MesaService service;
+    private MesaService service;
 
     public MesaController(MesaService service) {
         this.service = service;
     }
+
+    @GetMapping("/mapa")
+    public String mapa(Model model) {
+        model.addAttribute("mesas", service.listar());
+        return "mesas/mapa";
+    }
+
 
     @GetMapping
     public String listar(Model model) {

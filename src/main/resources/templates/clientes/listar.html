@@ -16,6 +16,7 @@
         <div class="collapse navbar-collapse" id="nav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" th:href="@{/clientes}">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/mesas}">Mesas</a></li>
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="btn btn-outline-light btn-sm ms-2" th:href="@{/login}">Iniciar sesión</a>
                 </li>
