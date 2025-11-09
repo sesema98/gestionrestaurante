@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/clientes")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN','MOZO')")
 public class ClienteController {
 
     private final MesaService mesaService;

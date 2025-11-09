@@ -42,6 +42,7 @@
     const getMesaCards = () => Array.from(document.querySelectorAll('.mesa-card'));
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const canManage = body.dataset.staff === 'true';
     const isAdmin = body.dataset.admin === 'true';
 
     let mesaActual = null;
@@ -116,7 +117,7 @@
             return;
         }
 
-        if (!isAdmin) {
+        if (!canManage) {
             return;
         }
 
@@ -152,7 +153,7 @@
             const body = await safeParse(response);
             if (!response.ok) {
                 manejarError(response.status, body);
-                if (fallbackUrl && isAdmin) {
+                if (fallbackUrl && canManage) {
                     window.location.href = fallbackUrl;
                 }
                 return;
@@ -162,7 +163,7 @@
             mesaModal?.show();
         } catch (error) {
             console.error(error);
-            if (fallbackUrl && isAdmin) {
+            if (fallbackUrl && canManage) {
                 window.location.href = fallbackUrl;
                 return;
             }
@@ -195,7 +196,7 @@
 
         const disponible = mesa.estado.toLowerCase() === 'disponible';
         if (refs.assignExistingWrapper) {
-            if (isAdmin && disponible) {
+            if (canManage && disponible) {
                 refs.assignExistingWrapper.classList.remove('d-none');
                 poblarClientesDisponiblesSelect();
             } else {
@@ -205,28 +206,28 @@
 
         if (disponible) {
             refs.mesaModalHint.textContent = 'Esta mesa está libre. Puedes asignarla desde aquí.';
-            if (isAdmin) {
+            if (canManage) {
                 refs.asignarBtn?.classList.remove('d-none');
                 refs.editarBtn?.classList.add('d-none');
                 refs.liberarBtn?.classList.add('d-none');
             }
         } else if (cliente) {
             refs.mesaModalHint.textContent = 'Mesa ocupada. Puedes editar o liberar la reserva.';
-            if (isAdmin) {
+            if (canManage) {
                 refs.asignarBtn?.classList.add('d-none');
                 refs.editarBtn?.classList.remove('d-none');
                 refs.liberarBtn?.classList.remove('d-none');
             }
         } else {
             refs.mesaModalHint.textContent = 'Mesa reservada. Asigna un cliente cuando llegue.';
-            if (isAdmin) {
+            if (canManage) {
                 refs.asignarBtn?.classList.remove('d-none');
                 refs.editarBtn?.classList.add('d-none');
                 refs.liberarBtn?.classList.add('d-none');
             }
         }
 
-        if (!isAdmin) {
+        if (!canManage) {
             refs.asignarBtn?.classList.add('d-none');
             refs.editarBtn?.classList.add('d-none');
             refs.liberarBtn?.classList.add('d-none');
@@ -320,7 +321,7 @@
     }
 
     async function manejarCambioEstadoInline(select) {
-        if (!isAdmin) {
+        if (!canManage) {
             mostrarAlerta('No tienes permisos para modificar estados.', 'warning');
             select.value = select.dataset.current || select.value;
             return;
@@ -526,7 +527,7 @@
                     `).join('')}
                 </select>` : '<span class="badge-estado sin-mesa">Sin mesa</span>'}
             </td>
-            ${isAdmin ? `
+            ${canManage ? `
             <td class="text-center">
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-outline-primary" data-action="edit">Editar</button>

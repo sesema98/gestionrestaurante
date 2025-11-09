@@ -29,10 +29,12 @@ public class DashboardController {
         var clientes = clienteService.listar();
 
         boolean isAdmin = hasRole(authentication, "ROLE_ADMIN");
+        boolean isMozo = hasRole(authentication, "ROLE_MOZO");
+        boolean canManage = isAdmin || isMozo;
         List<Cliente> visibles = clientes;
         Cliente reservaActual = null;
 
-        if (!isAdmin && authentication != null) {
+        if (!canManage && authentication != null) {
             Optional<Cliente> reserva = clienteService.buscarPorCorreo(authentication.getName());
             reservaActual = reserva.orElse(null);
             visibles = reserva.map(List::of).orElseGet(Collections::emptyList);
@@ -51,6 +53,7 @@ public class DashboardController {
         model.addAttribute("summary", summary);
         model.addAttribute("clienteForm", new Cliente());
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("canManage", canManage);
         model.addAttribute("usuarioActivo", authentication != null ? authentication.getName() : "");
         model.addAttribute("reservaActual", reservaActual);
         return "dashboard";

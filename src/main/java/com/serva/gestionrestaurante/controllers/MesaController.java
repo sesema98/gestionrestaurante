@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/mesas")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN','MOZO')")
 public class MesaController {
 
     private MesaService service;

@@ -5,7 +5,7 @@
 <th:block th:fragment="mainNav(active)">
     <nav class="navbar navbar-expand-lg navbar-modern fixed-top py-3">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" th:href="@{/}">Gestión Restaurante</a>
+            <a class="navbar-brand" th:href="@{/}">Gestion Restaurante</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -16,24 +16,14 @@
                             🏠 Inicio
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MOZO')">
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link" th:classappend="${active}=='clientes' ? ' active' : ''" th:href="@{/clientes}">
                             👥 Clientes
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MOZO')">
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link" th:classappend="${active}=='mesas' ? ' active' : ''" th:href="@{/mesas}">
                             🍽️ Mesas
-                        </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MOZO','CLIENTE')">
-                        <a class="nav-link" th:classappend="${active}=='menu' ? ' active' : ''" th:href="@{/menu}">
-                            📜 Menú
-                        </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" th:classappend="${active}=='insumos' ? ' active' : ''" th:href="@{/insumos}">
-                            🧺 Insumos
                         </a>
                     </li>
                 </ul>

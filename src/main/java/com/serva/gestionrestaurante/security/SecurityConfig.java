@@ -21,7 +21,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/login", "/error/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mesas/**").authenticated()
-                        .requestMatchers("/clientes/**", "/mesas/**", "/api/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/menu", "/menu/**").hasAnyRole("ADMIN","MOZO","CLIENTE")
+                        .requestMatchers("/menu/**").hasRole("ADMIN")
+                        .requestMatchers("/insumos/**").hasRole("ADMIN")
+                        .requestMatchers("/clientes/**", "/mesas/**").hasAnyRole("ADMIN","MOZO")
+                        .requestMatchers("/api/mesas/**", "/api/clientes/**").hasAnyRole("ADMIN","MOZO")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .requestMatchers("/", "/dashboard").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -43,17 +48,22 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService(BCryptPasswordEncoder encoder) {
-        UserDetails user = User.withUsername("cliente@demo.com")
+        UserDetails cliente = User.withUsername("cliente@demo.com")
                 .password(encoder.encode("12345"))
-                .roles("USER")
+                .roles("CLIENTE")
                 .build();
 
-        UserDetails admin = User.withUsername("mozo")
+        UserDetails mozo = User.withUsername("mozo")
+                .password(encoder.encode("12345"))
+                .roles("MOZO")
+                .build();
+
+        UserDetails admin = User.withUsername("admin")
                 .password(encoder.encode("12345"))
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user, admin);
+        return new InMemoryUserDetailsManager(cliente, mozo, admin);
     }
 
     @Bean

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo}">Plato</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: mainNav('menu')"></div>
+
+<main class="container py-5 mt-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="card card-glass">
+            <div class="card-header border-0">
+                <h4 class="mb-0" th:text="${titulo}">Registrar plato</h4>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/menu/guardar}" th:object="${plato}" method="post" class="row g-3 needs-validation" novalidate>
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nombre</label>
+                        <input type="text" class="form-control" th:field="*{nombre}" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Precio (S/)</label>
+                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{precio}" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Descripción</label>
+                        <textarea class="form-control" th:field="*{descripcion}" rows="3" placeholder="Opcional"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Insumos</label>
+                        <select class="form-select" multiple name="insumosIds"
+                                th:if="${!#lists.isEmpty(insumos)}">
+                            <option th:each="insumo : ${insumos}"
+                                    th:value="${insumo.id}"
+                                    th:selected="${plato.insumos.contains(insumo)}"
+                                    th:text="${insumo.nombre + ' (' + insumo.stock + ' ' + insumo.unidadMedida + ')'}">
+                            </option>
+                        </select>
+                        <div class="form-text" th:if="${#lists.isEmpty(insumos)}">
+                            No hay insumos registrados aún.
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <a class="btn btn-link text-muted" th:href="@{/menu}">Cancelar</a>
+                        <button class="btn btn-emerald px-4" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
