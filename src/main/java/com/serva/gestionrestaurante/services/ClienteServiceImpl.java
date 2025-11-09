@@ -18,6 +18,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override public Optional<Cliente> buscar(Long id) { return repo.findById(id); }
     @Override public Optional<Cliente> buscarPorMesa(Long mesaId) { return repo.findFirstByMesaId(mesaId); }
     @Override public Optional<Cliente> buscarPorCorreo(String correo) { return repo.findByCorreoIgnoreCase(correo); }
+    @Override public Optional<Cliente> buscarPorDni(String dni) { return repo.findByDni(dni); }
     @Override public Cliente guardar(Cliente c) { return repo.save(c); }
     @Override public void eliminar(Long id) { repo.deleteById(id); }
 }

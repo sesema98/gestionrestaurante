@@ -9,6 +9,7 @@ public interface ClienteService {
     Optional<Cliente> buscar(Long id);
     Optional<Cliente> buscarPorMesa(Long mesaId);
     Optional<Cliente> buscarPorCorreo(String correo);
+    Optional<Cliente> buscarPorDni(String dni);
     Cliente guardar(Cliente c);
     void eliminar(Long id);
 }

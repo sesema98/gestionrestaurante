@@ -40,7 +40,7 @@ public class ClienteController {
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente,
                           BindingResult result,
-                          @RequestParam("mesaId") Long mesaId,
+                          @RequestParam(value = "mesaId", required = false) Long mesaId,
                           Model model) {
 
         if (mesaId == null) {
@@ -51,6 +51,13 @@ public class ClienteController {
         if (mesaId != null && mesaSeleccionada == null) {
             result.rejectValue("mesa", "mesa.noExiste", "Selecciona una mesa valida");
         }
+        if (cliente.getDni() != null) {
+            cliente.setDni(cliente.getDni().trim());
+            if (!cliente.getDni().matches("\\d{8}")) {
+                result.rejectValue("dni", "dni.formato", "El DNI debe tener exactamente 8 dígitos.");
+            }
+        }
+
         Cliente clientePersistido = cliente.getId() != null
                 ? clienteService.buscar(cliente.getId()).orElse(null)
                 : null;
@@ -58,6 +65,13 @@ public class ClienteController {
         if (clientePersistido != null) {
             cliente.setActivo(clientePersistido.isActivo());
         }
+
+        clienteService.buscarPorDni(cliente.getDni()).ifPresent(duplicado -> {
+            boolean esOtroCliente = cliente.getId() == null || !duplicado.getId().equals(cliente.getId());
+            if (esOtroCliente) {
+                result.rejectValue("dni", "dni.duplicado", "El DNI ya está registrado.");
+            }
+        });
 
         boolean cambiandoMesa = mesaSeleccionada != null && (mesaAnterior == null ||
                 !mesaAnterior.getId().equals(mesaSeleccionada.getId()));
